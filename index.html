@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Test de Anatomía</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        select {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            display: block;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .correcta {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .incorrecta {
+            background-color: #f44336;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SELECTOR DE BLOQUE -->
+<select id="selectorBloque" onchange="cambiarBloque()">
+    <option value="1">Bloque 1 (1–25)</option>
+    <option value="2">Bloque 2 (26-50)</option>
+    <option value="3">Bloque 3 (51–75)</option>
+    <option value="4">Bloque 4 (76–100)</option>
+    <option value="5">Bloque 5 (101–125)</option>
+    <option value="6">Bloque 6 (126–150)</option>
+    <option value="7">Bloque 7 (151–176)</option>
+</select>
+<button onclick="iniciarExamen()">📝 Modo Examen</button>
+
+<p id="contador" style="text-align: center; font-weight: bold; margin-top: 10px;"></p>
+
+<!-- TARJETA DEL TEST -->
+<div class="card">
+    <h2 id="pregunta"></h2>
+    <div id="respuestas"></div>
+    <p id="resultado"></p>
+    <button onclick="siguientePregunta()">Siguiente pregunta</button>
+</div>
+
+<script>
+/* =========================
+   BLOQUES DE PREGUNTAS
+   ========================= */
+
+const bloque1 = [
+  {
+    texto: "En posición anatómica, el individuo ha de encontrarse:",
+    opciones: [
+      "Con los pies paralelos y los talones juntos",
+      "Con las palmas de la mano mirando hacia delante",
+      "En posición erecta",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es FALSA:",
+    opciones: [
+      "Esqueleto axial: lo conforman los huesos situados en la línea media del cuerpo",
+      "Esqueleto apendicular: lo conforman los huesos pertenecientes a las partes anexas a la línea media del cuerpo",
+      "Cintura escapular es el segmento proximal del miembro superior",
+      "Cintura pélvica es el segmento distal del miembro inferior"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es FALSA:",
+    opciones: [
+      "Esqueleto axial: lo conforman los huesos situados en la línea media del cuerpo",
+      "Esqueleto apendicular: lo conforman los huesos pertenecientes a las partes anexas a la línea media del cuerpo",
+      "Cintura escapular es el segmento distal del miembro superior",
+      "Cintura pélvica es el segmento proximal del miembro inferior"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es FALSA:",
+    opciones: [
+      "Esqueleto axial: lo conforman los huesos situados en el lateral del cuerpo",
+      "Esqueleto apendicular: lo conforman los huesos pertenecientes a las partes anexas a la línea media del cuerpo",
+      "Cintura escapular es el segmento proximal del miembro superior",
+      "Cintura pélvica es el segmento proximal del miembro inferior"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale cuál de las siguientes afirmaciones es VERDADERA:",
+    opciones: [
+      "Las articulaciones en bisagra (trocleares) realizan movimientos en dos ejes",
+      "Las articulaciones sellares realizan movimientos en dos ejes",
+      "Las articulaciones elipsoideas (condíleas) realizan movimientos en dos ejes",
+      "Son ciertas B y C"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale cuál de las siguientes afirmaciones es FALSA:",
+    opciones: [
+      "Las articulaciones en bisagra (trocleares) realizan movimientos en dos ejes",
+      "Las articulaciones sellares realizan movimientos en dos ejes",
+      "Las articulaciones elipsoideas (condíleas) realizan movimientos en tres ejes",
+      "Todas las respuestas son ciertas"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale cuál de las siguientes afirmaciones es FALSA:",
+    opciones: [
+      "Las articulaciones en bisagra (trocleares) realizan movimientos en dos ejes",
+      "Las articulaciones sellares realizan movimientos en tres ejes",
+      "Las articulaciones elipsoideas (condíleas) realizan movimientos en dos ejes",
+      "Todas las respuestas son ciertas"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es FALSA:",
+    opciones: [
+      "Las articulaciones planas sólo realizan movimientos de deslizamiento",
+      "Las articulaciones en bisagra sólo realizan movimientos de flexo-extensión",
+      "Las articulaciones elipsoideas sólo realizan movimientos de flexo-extensión y abducción (ABD)- aducción (ADD)",
+      "Las articulaciones sellares realizan movimientos de giro (rotaciones)"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es FALSA:",
+    opciones: [
+      "Las articulaciones planas sólo realizan movimientos de deslizamiento",
+      "Las articulaciones esferoideas sólo realizan movimientos de flexo-extensión y de deslizamiento",
+      "Las articulaciones en bisagra sólo realizan movimientos de flexo-extensión",
+      "Las articulaciones elipsoideas sólo realizan movimientos de flexo-extensión y abducción (ABD)- aducción (ADD)"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale cuál de las siguientes es VERDADERA sobre tipos de articulación que existen:",
+    opciones: [
+      "Planas",
+      "Bisagra",
+      "Elipsoideas",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale en qué sectores de la columna vertebral se encuentran las lordosis, señale la opción CORRECTA:",
+    opciones: [
+      "Torácico",
+      "Lumbar",
+      "Sacro",
+      "Ninguna de las respuestas es correcta"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "En posición anatómica, el individuo ha de encontrarse, elija la opción INCORRECTA:",
+    opciones: [
+      "Con los pies paralelos y los talones juntos",
+      "Con las palmas de la mano mirando hacia atrás",
+      "En posición erecta",
+      "Con la cabeza erecta, sin inclinación"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale en qué sectores de la columna vertebral se encuentran las lordosis, seña la opción CORRECTA:",
+    opciones: [
+      "Cervical",
+      "Lumbar",
+      "Sacro",
+      "Respuestas A y B son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale en qué sectores de la columna vertebral se encuentran las cifosis, señale la opción CORRECTA:",
+    opciones: [
+      "Torácico",
+      "Lumbar",
+      "Sacro",
+      "Respuestas A y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "¿Cuál de las siguientes estructuras NO está presente en el atlas (C1)?:",
+    opciones: [
+      "Arco posterior",
+      "Apófisis transversas",
+      "Agujeros transversos",
+      "Foramen vertebral"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "¿Cuál de las siguientes estructuras está presente en el atlas (C1)?:",
+    opciones: [
+      "Agujeros transversos.",
+      "Apófisis transversas mediales",
+      "Apófisis transversas laterales",
+      "Foramen ungueal"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "Todas las vértebras torácicas articulan con las costillas.",
+      "La apófisis odontoide se sitúa en la cara superior del cuerpo de C1",
+      "Los agujeros de conjunción se forman gracias a la superposición de las escotaduras de los pedículos",
+      "El sacro es una pieza ósea formada a partir de cinco vértebras sacras"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "Todas las vértebras torácicas articulan con las costillas",
+      "Los agujeros de conjunción se forman gracias a la superposición de las escotaduras de los pedículos",
+      "La apófisis odontoides se sitúa en la cara superior del cuerpo de C7",
+      "El cuerpo de las vértebras lumbares es más voluminoso que el de las vértebras torácicas"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "Todas las vértebras cervicales bajas y las torácicas articulan con las costillas.",
+      "La apófisis odontoides se sitúa en C2",
+      "Los agujeros de conjunción se forman gracias a la superposición de las escotaduras de los pedículos",
+      "El cuerpo de las vértebras lumbares es más voluminoso que el de las vértebras torácicas"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "La articulación atlanto-occipital es sinovial de tipo condílea",
+      "La articulación medial atlanto-axoidea es sinovial de tipo trocus o pivote",
+      "Las articulaciones laterales atlanto-axoideas son sinoviales de tipo artrodia",
+      "Las articulaciones intersomáticas son de tipo esferoidea"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "La articulación atlanto-occipital es sinovial de tipo condilea",
+      "La articulación medial atlanto-axoidea es sinovial de tipo tróclea",
+      "Las articulaciones laterales atlanto-axoideas son sinoviales de tipo artrodia",
+      "Las articulaciones intersomáticas son de tipo sínfisis"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la afirmación VERDADERA:",
+    opciones: [
+      "La articulación atlanto-occipital es sinovial de tipo condilea",
+      "La articulación medial atlanto-axoidea es sinovial de tipo trocus o pivote",
+      "Las articulaciones laterales atlanto-axoideas son sinoviales de tipo artrodia",
+      "Todas las respuestas anteriores son verdaderas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En posición anatómica, el individuo ha de encontrarse, elija la opción CORRECTA:",
+    opciones: [
+      "Con los pies paralelos y los talones juntos",
+      "Con las palmas de la mano mirando hacia atrás",
+      "Con la cabeza en flexión",
+      "By C son incorrectas"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación VERDADERA:",
+    opciones: [
+      "El ligamento longitudinal anterior une los cuerpos vertebrales por su cara anterior",
+      "El ligamento longitudinal posterior en la región lumbar se denomina ligamento nucal",
+      "El ligamento supraespinoso en la región dorsal se llama membrana tectoria",
+      "El ligamento amarillo no se encuentra en la columna vertebral"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "El ligamento longitudinal anterior une los cuerpos vertebrales por su cara anterior",
+      "El ligamento amarillo une las porciones posteriores de los arcos vertebrales",
+      "El ligamento amarillo no se encuentra en la columna vertebral",
+      "El músculo erector de la columna vertebral no es un ligamento de la columna vertebral"
+    ],
+    correcta: 2
+  }
+];
+const bloque2 = [
+  {
+    texto: "Señale la afirmación VERDADERA en relación a los ligamentos de la columna vertebral:",
+    opciones: [
+      "Ligamento longitudinal anterior",
+      "Ligamento longitudinal posterior",
+      "Ligamento supraespinoso",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "La sujeción de la apófisis odontoides del axis (C2) viene dada por:",
+    opciones: [
+      "El ligamento cruciforme",
+      "Los ligamentos alares",
+      "El ligamento del ápice del diente",
+      "Son ciertas A, B y C"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a la sujeción de la apófisis odontoides del axis (C2) señale la respuesta FALSA:",
+    opciones: [
+      "Ligamento cruciforme",
+      "Ligamentos alares",
+      "Ligamento del ápice del diente",
+      "Ligamento odontooccipital"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a la sujeción de la apófisis odontoides del axis (C2), señale la opción más adecuada:",
+    opciones: [
+      "Ligamento alariforme",
+      "Ligamento del indice del diente",
+      "Ligamento odontooccipital",
+      "Las respuestas A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En el extremo posterior de las costillas podemos encontrar:",
+    opciones: [
+      "La cabeza",
+      "El cuello",
+      "El tubérculo",
+      "Son ciertas A, B y C"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En el extremo anterior de las costillas podemos encontrar:",
+    opciones: [
+      "La cabeza",
+      "El cuello",
+      "El tubérculo",
+      "Las respuestas A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En el extremo posterior de las costillas podemos encontrar:",
+    opciones: [
+      "La cabeza",
+      "El cuerpoо",
+      "La apófisis costiforme",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto al hueso coxal, señale la respuesta FALSA:",
+    opciones: [
+      "El ileon es la porción superior",
+      "El isquion es la porción posteroinferior",
+      "El pubis es la porción anteroinferior",
+      "El agujero obturador se sitúa por encima del acetábulo"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la respuesta VERDADERA:",
+    opciones: [
+      "El eje vertical atraviesa el cuerpo de la cabeza a los pies",
+      "El eje transversal no existe en el cuerpo humano",
+      "La línea media del cuerpo equivale al eje horizontal",
+      "Son ciertas By C"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto al hueso coxal, señale la respuesta VERDADERA:",
+    opciones: [
+      "El ileon es la porción superior",
+      "El isquion es la porción posteroinferior",
+      "El pubis es la porción anteroinferior",
+      "Las respuestas A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto al hueso coxal, señale la respuesta VERDADERA:",
+    opciones: [
+      "El isquion es la porción posteroinferior.",
+      "El pubis es la porción superior",
+      "El agujero obturador se sitúa por debajo del acetábulo.",
+      "Las respuestas A y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De las siguientes afirmaciones sobre la cintura pélvica, señale la opción VERDADERA:",
+    opciones: [
+      "Formada por tres piezas óseas y tres articulaciones.",
+      "Dos huesos ilíacos (coxales) y un sacro.",
+      "Articulaciones sacroiliacas posteriores y sínfisis púbica anterior.",
+      "Las respuestas A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De las siguientes afirmaciones sobre la cintura pélvica, señale la opción FALSA:",
+    opciones: [
+      "Formado por dos piezas óseas y dos articulaciones.",
+      "Formado por tres piezas óseas y tres articulaciones.",
+      "Dos huesos ilíacos (coxales) y un sacro.",
+      "Articulaciones sacroilíacas posteriores y sínfisis púbica anterior."
+    ],
+    correcta: 0
+  },
+  {
+    texto: "De las siguientes afirmaciones sobre las articulaciones sacroilíacas, señale la opción VERDADERA:",
+    opciones: [
+      "Carilla auricular coxal + carillas auriculares hueso sacro.",
+      "Fibrocartílago.",
+      "En el hombre son casi inmóviles. En la mujer en el momento del parto se comportan como anfiartrosis.",
+      "Las respuestas A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De las siguientes afirmaciones sobre las articulaciones sacroilíacas, señale la opción FALSA:",
+    opciones: [
+      "Carilla auricular coxal + carillas auriculares hueso sacro.",
+      "Fibrocartilago.",
+      "En el hombre son móviles.",
+      "En la mujer en el momento del parto se comportan como anfiartrosis."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "De las siguientes afirmaciones sobre la pelvis, señale la opción VERDADERA:",
+    opciones: [
+      "Entre las funciones de la pelvis no está la de soportar el peso del cuerpo.",
+      "Constituye la porción ósea del canal del parto.",
+      "La pelvis no protege a las vísceras pélvicas.",
+      "Todas las respuestas anteriores son correctas."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "De las siguientes afirmaciones sobre la pelvis y las articulaciones sacroilíacas, señale la opción FALSA:",
+    opciones: [
+      "Entre las funciones de la pelvis no está la de soportar el peso del cuerpo.",
+      "Constituye la porción ósea del canal del parto.",
+      "La pelvis protege a las vísceras pélvicas.",
+      "La articulación sacroilíaca permite realizar dos movimientos: nutación y contranutación."
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Seleccione el músculo que pertenece a la musculatura paravertebral:",
+    opciones: [
+      "Cortos de la nuca",
+      "Dorsal ancho",
+      "Erector de la columna",
+      "Esplenios de la cabeza y cuello"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Seleccione el músculo que pertenece a la musculatura paravertebral:",
+    opciones: [
+      "Cortos de la nuca",
+      "Dorsal ancho",
+      "Trapecio",
+      "Erector de la columna"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la respuesta VERDADERA:",
+    opciones: [
+      "El eje transversal no está en ángulo recto con el eje vertical",
+      "El eje sagital no existe en el cuerpo humano",
+      "Existen 4 ejes en el cuerpo humano",
+      "En el cuerpo humano existe eje sagital, eje transversal y eje vertical"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Seleccione la opción más adecuada en relación a la musculatura paravertebral:",
+    opciones: [
+      "Dorsal ancho",
+      "Esplenios de la cabeza y cuello",
+      "Trapecio",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "En relación a los ejes del cuerpo humano señale la respuesta INCORRECTA:",
+    opciones: [
+      "Eje sagital",
+      "Eje transversal",
+      "Eje vertical",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es CIERTA:",
+    opciones: [
+      "Plano sagital o medio: plano vertical que divide al cuerpo en dos mitades (derecha e izquierda)",
+      "Plano coronal o frontal: plano vertical que divide al cuerpo en dos mitades (dorsal y ventral)",
+      "Plano horizontal o transversal: plano horizontal que divide al cuerpo en dos mitades (superior e inferior)",
+      "Son ciertas A, B y C"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es INCORRECTA:",
+    opciones: [
+      "Plano sagital o medio: plano vertical que divide al cuerpo en dos mitades (derecha e izquierda)",
+      "Plano coronal o frontal: plano vertical que divide al cuerpo en dos mitades (dorsal y ventral)",
+      "Plano horizontal o transversal: plano vertical que divide al cuerpo en dos mitades (superior e inferior)",
+      "Plano horizontal o transversal: plano horizontal que divide al cuerpo en dos mitades (superior e inferior)"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale cuál de las siguientes definiciones es INCORRECTA:",
+    opciones: [
+      "Plano sagital o medio: plano vertical que divide al cuerpo en dos mitades (derecha e izquierda)",
+      "Plano sagital o medio: plano horizontal que divide al cuerpo en dos mitades (derecha e izquierda)",
+      "Plano coronal o frontal: plano vertical que divide al cuerpo en dos mitades (dorsal y ventral)",
+      "Plano horizontal o transversal: plano horizontal que divide al cuerpo en dos mitades (superior e inferior)"
+    ],
+    correcta: 1
+  }
+];
+const bloque3 = [
+  {
+    texto: "De la musculatura anterolateral del cuello, seleccione el músculo que NO es capaz de flexionar el cuello:",
+    opciones: [
+      "Escalenos",
+      "Esternocleidomastoideo",
+      "Infrahioideos",
+      "Prevertebrales"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto a la musculatura del periné, seleccione la respuesta FALSA:",
+    opciones: [
+      "Cierran superiormente la cavidad pélvica y se sitúan en dos planos",
+      "El diafragma pélvico se sitúa en el plano profundo o superior",
+      "El diafragma urogenital se sitúa en el plano superficial o inferior",
+      "Los músculos que cierran las paredes laterales de la cavidad pélvica son el obturador interno y el piriforme/piramidal"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto a la musculatura del periné, seleccione la respuesta FALSA:",
+    opciones: [
+      "Cierran inferiormente la cavidad pélvica y se sitúan en dos planos",
+      "El diafragma pélvico se sitúa en el plano profundo o superior",
+      "El diafragma urogenital se sitúa asimismo en el plano profundo o superior",
+      "Los músculos que cierran las paredes laterales de la cavidad pélvica son el obturador interno y el piriforme/piramida"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Los músculos que forman parte del diafragma pélvico son:",
+    opciones: [
+      "Elevador del ano",
+      "Isquiococcígeo",
+      "Obturador interno",
+      "Las opciones A y B son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a la musculatura que forma parte del diafragma pélvico, señale la opción FALSA:",
+    opciones: [
+      "Elevador del ano",
+      "Isquiococcigeo",
+      "Obturador interno",
+      "Las opciones A y B son correctas"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "En relación a la musculatura que forma parte del diafragma pélvico, señale la opción VERDADERA:",
+    opciones: [
+      "Elevador del recto",
+      "Isquiococcigeo",
+      "Obturador interno",
+      "Las opciones A y B son correctas"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "En relación al nervio trigémino, señale la opción VERDADERA:",
+    opciones: [
+      "Se trata de un nervio motor.",
+      "Inervación motora de los músculos de la mímica.",
+      "El nervio oftálmico (V1) conduce información sensitiva del cuero cabelludo, frente y párpado superior.",
+      "Las respuestas A, B y C son verdaderas."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "En relación al nervio facial, señale la opción VERDADERA:",
+    opciones: [
+      "Es un nervio motor, sin componente sensorial.",
+      "Inervación motora de todos los músculos de la mímica.",
+      "Presenta tres ramos principales: V1, V2 y V3.",
+      "Las opciones A, B y C con falsas."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación a los pares craneales:",
+    opciones: [
+      "I--- N. olfatorio --- Sensorial --- Transmite los impulsos visuales al cerebro.",
+      "II--- N. óptico --- Sensorial --- Transmite información olfatoria al cerebro.",
+      "III --- N. oculomotor --- Sensorial --- Inerva los músculos que realizan la mayoría de movimientos oculares.",
+      "IV --- N. troclear/patético Motor --- Inerva el músculo que rota la lengua."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la opción FALSA en relación a los pares craneales:",
+    opciones: [
+      "V --- N. trigémino --- Mixto --- Percibe información sensitiva de la cara.",
+      "VI --- N. abducens --- Motor --- Músculo encargado de abducir el globo ocular.",
+      "IV --- N.facial--- Mixto --- Inerva los músculos de la mímica.",
+      "VIII --- N. vestibulococlear ---- Sensorial --- Percepción de sonidos y equilibrio."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación a los pares craneales",
+    opciones: [
+      "IX --- N. glosofaringeo --- Mixto --- Control de la presión arterial, gusto, tacto, dolor.",
+      "X --- N. vago --- Mixto --- Deglución, tos, habla, contracción y relajación del músculo liso del tracto gastrointestinal, disminuye la frecuencia cardiaca, entre otros.",
+      "XI --- N. accesorio --- Motor --- Deglución, movimientos de la cabeza y del cuello.",
+      "Las opciones A, By C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación a los pares craneales",
+    opciones: [
+      "VI --- N. abducens --- Motor --- Músculo encargado de abducir el globo ocular.",
+      "VIII --- N. vestibulococlear Sensorial --- Percepción de sonidos y equilibrio.",
+      "IX --- N. glosofaringeo-- Mixto --- Control de la presión arterial, gusto, tacto, dolor.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación a los pares craneales:",
+    opciones: [
+      "VI --- N. abducens --- Sensorial --- Músculo encargado de reducir el globo ocular.",
+      "VII --- N. facial --- Mixto --- Deglución, tos, habla, contracción y relajación del músculo liso del tracto gastrointestinal, disminuye la frecuencia cardiaca, entre otros.",
+      "XI --- N. accesorio --- Sensorial --- Percepción de sonidos y equilibrio.",
+      "Las opciones A, B y C son incorrectas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación al plexo braquial:",
+    opciones: [
+      "5 raíces (C5, C6, C7, C8, T1).",
+      "Interconexiones (plexo) de raíces, troncos, divisiones anteriores, divisiones posteriores y fascículos.",
+      "5 ramos terminales: n. musculocutáneo, n. axilar, n. radial, n. mediano, n. cubital.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación al plexo lumbosacro:",
+    opciones: [
+      "Nervio ciático: 5 raíces, 2 lumbares (L4, L5) y 3 sacras (S1, S2, S3).",
+      "El nervio ciático es el más grande y largo del cuerpo humano.",
+      "Inervación motora y sensorial de la pierna y el pie.",
+      "Las opciones A, By C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación FALSA entre arteria y territorio:",
+    opciones: [
+      "Arteria braquial --- brazo.",
+      "Arteria cubital --- antebrazo.",
+      "Arteria radial --- axila.",
+      "Las respuestas A y B son correctas."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la relación VERDADERA entre arteria y territorio:",
+    opciones: [
+      "Arteria femoral --- pierna.",
+      "Arteria poplitea --- muslo.",
+      "Arteria pedia --- pie.",
+      "Arteria subclavia --- brazo."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la relación VERDADERA entre vasos venosos y antebrazo:",
+    opciones: [
+      "Vena safena menor.",
+      "Vena cefálica.",
+      "Vena media.",
+      "Vena safena mayor."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a los ligamentos de la articulación FEMOROTIBIAL, señale la VERDADERA:",
+    opciones: [
+      "Ligamento cruzado posterior: superficie intercondilar anterior de la tibia a cara interna del cóndilo lateral femoral.",
+      "Ligamento cruzado anterior: superficie intercondilar posterior tibial a cara interna del cóndilo medial femoral.",
+      "Ligamento cruzado anterior es el más poderoso.",
+      "Ligamento cruzado posterior es el principal estabilizador del fémur con la rodilla flexionada o soportando peso."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a la musculatura anterolateral del cuello, seleccione la opción más adecuada:",
+    opciones: [
+      "Esternocleidomastoideo",
+      "Infrahioideos",
+      "Prevertebrales",
+      "Las opciones A, B y C con correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a la musculatura anterolateral del cuello, seleccione la opción más adecuada:",
+    opciones: [
+      "Esternocleidomastoideo",
+      "Prevertebrales",
+      "Suprahioideos",
+      "Las opciones A, By C con correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De la musculatura del tórax, seleccione el músculo que NO es inspirador (no eleva las costillas):",
+    opciones: [
+      "Intercostales externos",
+      "Intercostales internos",
+      "Pectoral mayor",
+      "Pectoral menor"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "De la musculatura del tórax, (músculos inspiración), seleccione la opción más adecuada:",
+    opciones: [
+      "Intercostales externos",
+      "Pectoral mayor",
+      "Pectoral menor",
+      "Las opciones A, B y C con correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De la musculatura del tórax, (músculos inspiración), seleccione la opción más adecuada:",
+    opciones: [
+      "Intercostales internos",
+      "Pectoral mayor",
+      "Pectoral menor",
+      "Las opciones By C con correctas"
+    ],
+    correcta: 3
+  }
+];
+const bloque4 = [
+  {
+    texto: "Respecto al diafragma, señale la afirmación FALSA:",
+    opciones: [
+      "Es el principal músculo inspirador",
+      "Se ubica en el interior del tronco, entre las cavidades torácica y abdominal",
+      "El centro tendinoso o frénico es la porción central",
+      "Los tres hiatos se ubican en la parte posterior o lumbar de la porción carnosa"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto al diafragma, señale la afirmación FALSA:",
+    opciones: [
+      "Es el principal músculo espirador",
+      "Se ubica en el interior del tronco, entre las cavidades torácica y abdominal",
+      "El centro tendinoso o frénico es la porción central",
+      "La porción carnosa o muscular es la porción periférica"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto al diafragma, señale la afirmación FALSA:",
+    opciones: [
+      "Es el principal músculo inspirador",
+      "Se ubica en el interior del tronco, entre las cavidades torácica y abdominal",
+      "El centro tendinoso o frénico es la porción central",
+      "Las respuestas A, B y C son falsas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto la movilidad del tronco, señale la respuesta VERDADERA:",
+    opciones: [
+      "Ninguno de los músculos del plano superficial del dorso es extensor.",
+      "Todos los músculos del plano profundo del dorso son extensores.",
+      "Ninguno de los músculos anterolaterales del cuello es extensor.",
+      "Son ciertas B y C."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a la movilidad del tronco, señale la respuesta VERDADERA:",
+    opciones: [
+      "Ninguno de los músculos del plano superficial del dorso es extensor",
+      "Todos los músculos del plano profundo del dorso son extensores",
+      "Las opciones A y B son falsas",
+      "Las opciones A y B son verdaderas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a la movilidad del tronco, señale la respuesta VERDADERA:",
+    opciones: [
+      "Alguno de los músculos del plano superficial del dorso es extensor",
+      "Todos los músculos del plano profundo del dorso son extensores",
+      "Ninguno de los músculos anterolaterales del cuello es extensor",
+      "Son ciertas A, B y C"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a las paredes del abdomen, seleccione la respuesta FALSA:",
+    opciones: [
+      "En la pared anterior solo se ubican los rectos abdominales",
+      "El transverso del abdomen es el más profundo de los anchos del abdomen",
+      "La inserción anterior de las seis hojas aponeuróticas de los anchos del abdomen, forman la línea alba",
+      "En la pared posterior se ubican: el cuadrado lumbar (medial) y el psoas-ilíaco (lateral)"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a las paredes del abdomen, seleccione la respuesta FALSA:",
+    opciones: [
+      "En la pared anterior solo se ubican los rectos abdominales",
+      "El transverso del abdomen es el más profundo de los anchos del abdomen",
+      "La inserción anterior de las seis hojas aponeuróticas de los anchos del abdomen, forman la línea alba",
+      "Las opciones A, B y C son falsas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a las paredes del abdomen, seleccione la respuesta VERDADERA:",
+    opciones: [
+      "En la pared anterior solo se ubican los rectos abdominales",
+      "El transverso del abdomen es el más profundo de los anchos del abdomen",
+      "La inserción anterior de las seis hojas aponeuróticas de los anchos del abdomen, forman la línea alba",
+      "Las opciones A, B y C son verdaderas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a la movilidad del tronco, señale la respuesta FALSA:",
+    opciones: [
+      "Los giros del tronco los realizan los rectos y anchos del abdomen",
+      "Las lateralizaciones las realiza el cuadrado lumbar",
+      "Los rectos del abdomen son flexores",
+      "Todos los anchos del abdomen realizan la prensa abdominal"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto a la movilidad del tronco, señale la respuesta VERDADERA:",
+    opciones: [
+      "Los rectos del abdomen son flexores",
+      "Todos los anchos del abdomen realizan la prensa abdominal",
+      "La porción psoas del Psoas-ilíaco flexiona la columna",
+      "Las opciones A, B y C son verdaderas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a la movilidad del tronco, señale la respuesta FALSA:",
+    opciones: [
+      "Los rectos del abdomen son extensores",
+      "Las lateralizaciones las realiza el cuadrado lumbar",
+      "Los rectos del abdomen son flexores",
+      "Todos los anchos del abdomen realizan la prensa abdominal"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación FALSA respecto a la osteología del miembro inferior.",
+    opciones: [
+      "La línea intetrocantérea se sitúa en la cara anterior de la epífisis proximal del fémur.",
+      "En las áreas intercondilares tibiales se insertan los ligamentos cruzados.",
+      "La línea áspera recorre toda la diáfisis de la tibia por su cara posterior.",
+      "Los huesos sesamoideos del pie se sitúan en la cara plantar de la cabeza del primer metatarsiano."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la afirmación más adecuada respecto a la osteología del miembro inferior.",
+    opciones: [
+      "La línea intetrocantérea se sitúa en la cara anterior de la epífisis proximal del fémur.",
+      "En las áreas intercondilares tibiales se insertan los ligamentos cruzados.",
+      "Los huesos sesamoideos del pie se sitúan en la cara plantar de la cabeza del primer metatarsiano.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación FALSA respecto a la osteología del miembro inferior.",
+    opciones: [
+      "La línea intetrocantérea se sitúa en la cara anterior de la epífisis proximal del fémur.",
+      "En las áreas intercondilares tibiales se insertan los ligamentos cruzados.",
+      "Los huesos sesamoideos del pie se sitúan en la cara plantar de la cabeza del primer metatarsiano.",
+      "Las opciones A, B y C son falsas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a la articulación COXOFEMORAL, señale la FALSA.",
+    opciones: [
+      "Sus superficies articulares son: la mayor parte de la cabeza femoral, la superficie semilunar del acetábulo y el rodete acetabular.",
+      "El ligamento transverso del acetábulo es parte del rodete acetabular.",
+      "Como elementos de unión, encontramos cuatro ligamentos: Iliofemoral, Pubofemoral, Isquiofemoral y Ligamento de la cabeza del fémur.",
+      "Se trata de una articulación sinovial multiaxial de tipo enartrosis."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a la articulación COXOFEMORAL, señale la opción más adecuada:",
+    opciones: [
+      "Sus superficies articulares son: la mayor parte de la cabeza femoral, la superficie semilunar del acetábulo y el rodete acetabular.",
+      "El ligamento transverso del acetábulo es parte del rodete acetabular.",
+      "Se trata de una articulación sinovial multiaxial de tipo enartrosis.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a la articulación COXOFEMORAL, señale la opción más adecuada:",
+    opciones: [
+      "Sus superficies articulares son: la mayor parte de la cabeza humeral, la superficie semilunar del acetábulo y el rodete tubular.",
+      "El ligamento transverso del acetábulo es parte del rodete tubular.",
+      "Como elementos de unión, encontramos seis ligamentos: Iliofemoral, Pubofemoral, Isquiofemoral, Isquiotibial, Pubococcigeo y Ligamento de la cabeza del fémur.",
+      "Las opciones A, B y C son falsas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación con los ligamentos de la articulación COXOFEMORAL, señale la afirmación CORRECTA:",
+    opciones: [
+      "El ligamento iliofemoral refuerza la cara posterosuperior de la articulación.",
+      "El ligamento isquiofemoral refuerza la cara anterosuperior de la articulación.",
+      "El ligamento pubofemoral refuerza la cara inferior de la articulación.",
+      "A y B son ciertas."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "En relación con los ligamentos de la articulación COXOFEMORAL, señale la afirmación más adecuada:",
+    opciones: [
+      "El ligamento iliofemoral refuerza la cara posterosuperior de la articulación.",
+      "El ligamento isquiofemoral refuerza la cara anterosuperior de la articulación.",
+      "El ligamento pubofemoral refuerza la cara superior de la articulación.",
+      "Las opciones A, B y C son falsas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación con los ligamentos de la articulación COXOFEMORAL, señale la afirmación CORRECTA:",
+    opciones: [
+      "El ligamento pubofemoral refuerza la cara inferior de la articulación.",
+      "El ligamento iliofemoral refuerza la cara posterosuperior de la articulación.",
+      "El ligamento isquiofemoral refuerza la cara anterosuperior de la articulación.",
+      "Las opciones A, B y C son falsas."
+    ],
+    correcta: 0
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a la cápsula articular de la articulación FEMOROTIBIAL, señale la FALSA:",
+    opciones: [
+      "Es una estructura fibrosa que envuelve la articulación.",
+      "Se fija en el fémur, en la tibia y en la rótula bordeando las correspondientes superficies articulares y lateralmente, se fija fuertemente a ambos meniscos.",
+      "La membrana sinovial se sitúa por dentro de la cápsula tapizando sus paredes internas.",
+      "Las opciones A, B y C son incorrectas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a la cápsula articular de la articulación FEMOROTIBIAL, señale la VERDADERA:",
+    opciones: [
+      "Es una estructura fibrosa que no envuelve la articulación.",
+      "Se fija en el fémur, tibia y peroné bordeando las correspondientes superficies articulares y lateralmente, se fija fuertemente a ambos meniscos.",
+      "La membrana sinovial se sitúa por dentro de la cápsula tapizando sus paredes internas.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a los ligamentos de la articulación FEMOROTIBIAL, señale la VERDADERA:",
+    opciones: [
+      "Ligamento rotuliano: Continuación del tendón del cuádriceps.",
+      "Retináculos medial y lateral: continuación de las aponeurosis del músculo de la fascia lata.",
+      "Ligamento colateral peroneo, externo o lateral: cóndilo lateral del fémur cabeza del peroné. Es un ligamento intrínseco que forma parte de la cápsula articular.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 0
+  },
+  {
+    texto: "De las siguientes afirmaciones respecto a los ligamentos de la articulación FEMOROTIBIAL, señale la FALSA:",
+    opciones: [
+      "Ligamento cruzado anterior: superficie intercondilar anterior de la tibia a cara interna del cóndilo lateral femoral.",
+      "Ligamento cruzado posterior: superficie intercondilar posterior tibial a cara interna del cóndilo medial femoral.",
+      "Ligamento cruzado posterior es el más poderoso.",
+      "Ligamento cruzado anterior es el principal estabilizador del fémur con la rodilla flexionada o soportando peso."
+    ],
+    correcta: 3
+  }
+];
+const bloque5 = [
+  {
+    texto: "En relación a las articulaciones tibioperoneas proximal y distal señale la FALSA:",
+    opciones: [
+      "Proximal: sinovial de tipo artodia.",
+      "Distal: fibrosa de tipo sindesmosis.",
+      "La articulación tibioperonea proximal forma parte funcional de la articulación de la rodilla.",
+      "Ambos huesos se encuentran unidos por sus diáfisis por la membrana interósea."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Elija cuál de las siguientes articulaciones NO está implicada en los movimientos de inversión/eversión del pie:",
+    opciones: [
+      "Tibio-peronéa-astragalina",
+      "Subastragalina",
+      "Astrágalo-calcáneo-navicular",
+      "Calcáneo-cuboidea"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Elija cuál de las siguientes articulaciones está implicada en los movimientos de inversión/eversión del pie, señale la opción más adecuada:",
+    opciones: [
+      "Subastragalina",
+      "Astrágalo-calcáneo-navicular",
+      "Calcáneo-cuboidea",
+      "Las opciones A, B y C están implicadas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Elija cuál de las siguientes articulaciones NO está implicada en los movimientos de inversión/eversión del pie, señale la opción más adecuada:",
+    opciones: [
+      "Supraastragalina",
+      "Astro-calco-radicular",
+      "Tibio-peronea-astragalina",
+      "Ninguna está implicada"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Los movimientos de flexion dorsal/flexión plantar se realizan en la articulación:",
+    opciones: [
+      "Subastragalina",
+      "Tibio-peronea-astragalina",
+      "Astrágalo-calcáneo-navicular",
+      "Calcáneo-cuboidea"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "En relación a la articulación implicada en los movimientos de flexión dorsal/flexión plantar, señale la opción más adecuada:",
+    opciones: [
+      "Subastragalina",
+      "Astrágalo-calcáneo-navicular",
+      "Calcáneo-cuboidea",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a los huesos implicados en los movimientos de flexión dorsal/flexión plantar, señale la opción FALSA",
+    opciones: [
+      "Calcáneo",
+      "Peroné",
+      "Tibia",
+      "Astrágalo"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale los movimientos que pueden realizar las articulaciones metatarso-falángicas:",
+    opciones: [
+      "Flexo-extensión",
+      "Abducción (ABD)-aducción (ADD)",
+      "Rotación",
+      "Son ciertas A y B"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale los movimientos que pueden realizar las articulaciones metatarso-falángicas:",
+    opciones: [
+      "Reducción (RDC)",
+      "Rotación",
+      "Flexo-extensión",
+      "Inversión"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale los movimientos que pueden realizar las articulaciones metatarso-falángicas, señale la opción INCORRECTA:",
+    opciones: [
+      "Rotación",
+      "Flexo-extensión",
+      "Abducción (ABD)",
+      "Aducción (ADD)"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "En relación con los músculos que movilizan la articulación COXOFEMORAL, seleccione la afirmación FALSA:",
+    opciones: [
+      "El glúteo mayor es extensor.",
+      "El psoas iliaco es flexor.",
+      "El semimembranoso es extensor.",
+      "El recto femoral es extensor."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación con los músculos que movilizan la articulación COXOFEMORAL, seleccione la afirmación más adecuada:",
+    opciones: [
+      "El glúteo mayor es extensor.",
+      "El psoas iliaco es flexor.",
+      "El semimembranoso es extensor.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación con los músculos que movilizan la articulación COXOFEMORAL, seleccione la afirmación FALSA:",
+    opciones: [
+      "El psoas iliaco es extensor.",
+      "El glúteo mayor es extensor.",
+      "El recto femoral es flexor.",
+      "El semimembranoso es extensor."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "En relación con los músculos que movilizan la articulación COXOFEMORAL, seleccione la afirmación FALSA:",
+    opciones: [
+      "El sartorio es flexor.",
+      "El cuádriceps es flexor.",
+      "Los músculos pelvitrocantéreos son rotadores externos.",
+      "El pectíneo es aductor (ADD)."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "En relación con los músculos que movilizan la articulación COXOFEMORAL, seleccione la afirmación más adecuada:",
+    opciones: [
+      "Los músculos pelvitrocantéreos son rotadores externos.",
+      "El sartorio es flexor.",
+      "El cuadriceps es extensor.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación con los músculos que movilizan la articulación COXOFEMORAL, seleccione la afirmación más adecuada:",
+    opciones: [
+      "El cuádriceps es flexor.",
+      "Los músculos pelvitrocantéreos son rotadores internos.",
+      "El pectíneo es abductor (ABD).",
+      "Las opciones A, B y C son incorrectas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a la pata de ganso, señale la afirmación FALSA.",
+    opciones: [
+      "Se sitúa en la cara medial de la rodilla.",
+      "Está formada por los tendones de cuatro músculos: Semimembranoso, Semitendinoso, Grácil y Sartorio.",
+      "Todos los músculos que la forman son rotadores externos de la rodilla.",
+      "Todos los músculos que la forman son flexores de la rodilla."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Respecto a la pata de ganso, señale la afirmación más adecuada.",
+    opciones: [
+      "Se sitúa en la cara medial de la rodilla.",
+      "Todos los músculos que la forman son flexores de la rodilla.",
+      "Está formada por los tendones de cuatro músculos: Semimembranoso, Semitendinoso, Grácil y Sartorio.",
+      "Las opciones A, B y C con correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto a la pata de ganso, señale la afirmación más adecuada.",
+    opciones: [
+      "Todos los músculos que la forman son extensores de la rodilla.",
+      "Está formada exclusivamente por los tendones de tres músculos.",
+      "Todos los músculos que la forman son rotadores externos de la rodilla.",
+      "Las opciones A, B y C con incorrectas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "¿Cuál de los siguientes músculos es inversores del pie?, señale la opción más adecuada:",
+    opciones: [
+      "Flexor largo de los dedos",
+      "Flexor largo del dedo gordo",
+      "Tibial posterior",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "¿Cuál de los siguientes músculos NO es inversor del pie?",
+    opciones: [
+      "Flexor largo de los dedos",
+      "Tríceps sural",
+      "Flexor largo del dedo gordo",
+      "Tibial posterior"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "¿Cuál de los siguientes los músculos es inversor del pie?",
+    opciones: [
+      "Tibial posterior",
+      "Triceps sural",
+      "Extensor largo de los dedos",
+      "Extensor largo del dedo gordo"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Indique cuál de los siguientes músculos NO es eversor del pie:",
+    opciones: [
+      "Peroneo anterior (tercer peroneo)",
+      "Extensor largo (común) de los dedos",
+      "Peroneo lateral largo",
+      "Tibial anterior"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Indique cuál de los siguientes músculos es eversor del pie:",
+    opciones: [
+      "Peroneo posterior",
+      "Flexor de los dedos",
+      "Peroneo lateral largo",
+      "Tibial anterior"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Indique cual de los siguientes musculos es eversor del pie, señale la opcion mas adecuada.",
+    opciones: [
+      "Sartorio",
+      "Tibial anterior",
+      "Músculos lumbricales",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  }
+];
+const bloque6 = [
+  {
+    texto: "Señale la relación CORRECTA entre nervio y territorio de INERVACIÓN SENSITIVA, seleccione la opción más adecuada:",
+    opciones: [
+      "Primero",
+      "Segundo",
+      "Tercero",
+      "Cuarto"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la relación CORRECTA entre nervio y territorio de INERVACIÓN SENSITIVA, seleccione la opción más adecuada:",
+    opciones: [
+      "Tercero",
+      "Cuarto",
+      "Primero",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación CORRECTA entre nervio y territorio de INERVACIÓN SENSITIVA, seleccione la opción más adecuada:",
+    opciones: [
+      "Cuarto",
+      "Primero",
+      "Tercero",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación CORRECTA entre nervio y territorio de INERVACIÓN SENSITIVA, seleccione la opción más adecuada:",
+    opciones: [
+      "Cara medial de la pierna------------------- Nervio safeno",
+      "Cara interna del muslo-------------------- Nervio obturador",
+      "Cara posterior del muslo------------------- Nervio cutáneo femoral posterior",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación INCORRECTA entre nervio y territorio de INERVACIÓN SENSITIVA:",
+    opciones: [
+      "Cara interna del muslo--------------------- Nervio obturador",
+      "Cara posterior del muslo-------------------- Nervio obturador",
+      "Cara medial de la pierna-------------------- Nervio safeno",
+      "Dorso del pie---------------------------- Nervio peroneo común"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la relación CORRECTA entre nervio y territorio de INERVACIÓN SENSITIVA, seleccione la opción más adecuada:",
+    opciones: [
+      "Cara posterior del muslo------------------- Nervio safeno",
+      "Cara interna del muslo--------------------- Nervio cutáneo femoral posterior",
+      "Cara medial de la pierna-------------------- Nervio condileo común",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación FALSA entre nervio y territorio de INERVACIÓN MOTORA.",
+    opciones: [
+      "Músculos Aductores----------------------- Nervio obturador",
+      "Cuádriceps femoral----------------------- Nervio femoral",
+      "Músculos glúteos------------------------- Nervio glúteo superior",
+      "Músculos isquiotibiales-------------------- Nervio ciático"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la relación CORRECTA entre nervio y territorio de INERVACIÓN MOTORA, señale la opción mas adecuada:",
+    opciones: [
+      "Músculos Aductores----------------------- Nervio obturador",
+      "Cuádriceps femoral----------------------- Nervio femoral",
+      "Músculos isquiotibiales-------------------- Nervio glúteo superior",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción más adecuada en cuanto a la relación nervio y territorio de INERVACIÓN MOTORA:",
+    opciones: [
+      "Cuádriceps femoral----------------------- Nervio obturador",
+      "Músculos Aductores----------------------- Nervio femoral",
+      "Músculos glúteos------------------------- Nervio glúteo superior",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación VERDADERA en relación a la vascularización arterial:",
+    opciones: [
+      "La Arteria Aorta emerge del ventrículo izquierdo del corazón e inicia su recorrido de forma ascendente. Posteriormente se incurva hacia la izquierda y hacia atrás e inicia un recorrido descendente que recorre la cavidad torácica y la cavidad abdominal, próxima a los cuerpos vertebrales.",
+      "Arteria carótida interna: irrigación de todos los músculos de la cabeza, las cavidades nasales y bucal junto con sus componentes y las vísceras del cuello.",
+      "Arteria Carótida externa: irrigación de todas las estructuras de la cavidad craneal (encefálicas).",
+      "Vena safena mayor: se origina en la cara lateral del tobillo, por detrás del maléolo lateral, ascendiendo por la cara posterior de la pierna, hasta llegar al hueco popliteo."
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación FALSA en relación a la vascularización venosa del antebrazo:",
+    opciones: [
+      "Las venas superficiales de la cara anterior del antebrazo se anastomosan a la altura del pliegue del codo y forman una 'M' venosa (vena mediana del codo).",
+      "Vena cefálica.",
+      "Vena basílica.",
+      "Vena cefálica y vena basilica se anastomosan con la vena axilar."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación FALSA en relación a la vascularización venosa:",
+    opciones: [
+      "En el sistema venoso profundo (SVP) los vasos siguen el trayecto de las arterias.",
+      "En el sistema venoso profundo (SVP) los vasos reciben, en general, el mismo nombre que el de las arterias a las que acompañan.",
+      "En el sistema venoso Sistema venoso superficial (SVS) los vasos no están conectados con el sistema venoso profundo a través de venas perforantes.",
+      "En el sistema venoso Sistema venoso superficial (SVS) los vasos se encuentran entre las fascias y el tejido celular subcutáneo."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Respecto a la escápula, señale la afirmación FALSA:",
+    opciones: [
+      "La espina se sitúa en la cara dorsal",
+      "Tiene tres bordes",
+      "La apófisis coracoides es el saliente lateral de la espina",
+      "La espina separa las fosas supraespinosa e infraespinosa"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Respecto a la escápula, señale la afirmación CORRECTA:",
+    opciones: [
+      "Tiene tres bordes",
+      "La espina separa las fosas supraespinosa y subescapular",
+      "La espina se sitúa en la cara anterior",
+      "La cavidad glenoidea es posterior"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto a la escápula, señale la opción más adecuada:",
+    opciones: [
+      "La espina se sitúa en la cara dorsal o posterior",
+      "Tiene cuatro bordes y dos ángulos",
+      "La espina separa las fosas retroespinosa y glenoidea",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto al cúbito, señale la afirmación FALSA.",
+    opciones: [
+      "La tuberosidad se sitúa en la cara posterior de la diáfisis",
+      "La cabeza es distal",
+      "La escotadura radial del cúbito es proximal",
+      "Se sitúa medial en el antebrazo"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Respecto al cúbito, señale la opción más adecuada:",
+    opciones: [
+      "La cabeza es distal",
+      "Se sitúa medial en el antebrazo",
+      "La escotadura radial del cúbito es proximal",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Respecto al cúbito, señale la afirmación FALSA, señale la opción más adecuada:",
+    opciones: [
+      "La cabeza es distal",
+      "Se sitúa medial en el antebrazo",
+      "La escotadura radial del cúbito es proximal",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "El complejo articular del codo está formado por:",
+    opciones: [
+      "La articulación húmero-cubital",
+      "La articulación húmero-radial",
+      "La articulación radiocubital proximal",
+      "Son ciertas A y B"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "El complejo articular del codo está formado por:",
+    opciones: [
+      "La articulación húmero-cubital y humero-radial",
+      "La articulación radiocubital proximal",
+      "Son ciertas A y B",
+      "Todas son ciertas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "El complejo articular del codo está formado por, señale la opción CORRECTA:",
+    opciones: [
+      "La articulación húmero-epitroclear",
+      "La articulación húmero-cubital",
+      "La articulación radiocubital",
+      "La articulación húmero-epicondilea"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "La articulación radio-cubital proximal es condílea",
+      "La articulación esterno-costo-clavicular es de tipo sellar",
+      "La articulación húmero-cubital es una tróclea",
+      "La articulación glenohumeral es una enartrosis"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "Señale la afirmación más adecuada:",
+    opciones: [
+      "La articulación esterno-costo-clavicular es de tipo sellar",
+      "La articulación glenohumeral es una enartrosis",
+      "La articulación húmero-cubital es una tróclea",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación más adecuada:",
+    opciones: [
+      "La articulación esterno-costo-clavicular es de tipo enartrosis",
+      "La articulación glenohumeral es de tipo sellar",
+      "La articulación húmero-cubital es condílea",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación FALSA.",
+    opciones: [
+      "El cúbito articula con el capítulo del húmero",
+      "El cúbito articula con el radio",
+      "El cúbito no articula con los huesos del carpo",
+      "El radio articula con los huesos del carpo"
+    ],
+    correcta: 0
+  }
+];
+const bloque7 = [
+  {
+    texto: "Señale la afirmación más adecuada:",
+    opciones: [
+      "El cúbito articula con el radio",
+      "El cúbito no articula con los huesos del carpo",
+      "El radio articula con los huesos del carpo",
+      "Las opciones A, B y C son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "El cúbito articula con el radio",
+      "El cúbito articula con los huesos del carpo",
+      "El radio articula con los huesos del carpo",
+      "El radio no articula con los huesos metacarpianos"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la afirmación VERDADERA:",
+    opciones: [
+      "La articulación trapecio-metacarpiana del pulgar es de tipo sellar",
+      "Las articulaciones carpo-metacarpianas de los dedos largos son de tipo artrodia",
+      "Las opciones A y B son correctas",
+      "Las opciones A y B son incorrectas"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la afirmación FALSA:",
+    opciones: [
+      "La articulación trapecio-metacarpiana del pulgar es de tipo sellar",
+      "Las articulaciones carpo-metacarpianas de los dedos largos son de tipo artrodia",
+      "La apófisis estiloides del radio se relaciona con el hueso escafoides",
+      "La articulación radiocarpiana es de tipo enartosis"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la afirmación VERDADERA:",
+    opciones: [
+      "El retináculo flexor se sitúa en la zona palmar del carpo",
+      "Las articulaciones carpo-metacarpianas de los dedos largos son de tipo artrodia",
+      "La articulación radiocarpiana es de tipo condílea",
+      "Son ciertas A, B y C"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción FALSA en relación al músculo dorsal ancho:",
+    opciones: [
+      "Músculo ancho y aplanado que cubre toda la parte inferior del dorso.",
+      "Inserción en borde medial húmero.",
+      "Aducción (ADD) del brazo/hombro.",
+      "Rotación externa del brazo / hombro."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación al músculo pectoral mayor:",
+    opciones: [
+      "Inserción porción humeral del hueso cúbito.",
+      "Rotación interna brazo / hombro.",
+      "Abducción brazo / hombro.",
+      "Extensión brazo / hombro."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la opción VERDADERA en relación al músculo deltoides:",
+    opciones: [
+      "Forma triangular (delta- ).",
+      "Flexión y extensión brazo / articulación glenohumeral.",
+      "Aducción brazo / articulación glenohumeral.",
+      "Las opciones A y B son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale qué músculo NO rota internamente el hombro:",
+    opciones: [
+      "Redondo mayor",
+      "Redondo menor",
+      "Pectoral mayor",
+      "Dorsal ancho"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale qué músculo rota internamente el hombro, señale la opción más adecuada:",
+    opciones: [
+      "Subescapular",
+      "Redondo mayor",
+      "Dorsal ancho",
+      "Las opciones A, B y C con correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale qué músculo rota internamente el hombro:",
+    opciones: [
+      "Redondo menor",
+      "Triceps braquial",
+      "Bíceps braquial",
+      "Las opciones A, B y C con incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale qué músculo NO pertenece al manguito rotador:",
+    opciones: [
+      "Supraespinoso",
+      "Infraespinoso",
+      "Redondo mayor",
+      "Subescapular"
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale qué músculo NO pertenece al manguito rotador:",
+    opciones: [
+      "Subescapular",
+      "Infraespinoso",
+      "Redondo menor",
+      "Subespinoso"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale el músculo que conforma el manguito rotador, señale la opción más adecuada:",
+    opciones: [
+      "Subespinoso",
+      "Infraespinoso",
+      "Redondo mayor",
+      "Supraescapular"
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale qué dedos pueden movilizar los músculos del plano profundo de la celda posterior del antebrazo, señale la opción más adecuada:",
+    opciones: [
+      "Pulgar",
+      "Índice",
+      "Meñique",
+      "Las opciones A y B son correctas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "En relación a los dedos que pueden ser movilizados por los músculos del plano profundo de la celda posterior del antebrazo, señale la opción INCORRECТА:",
+    opciones: [
+      "Meñique",
+      "Pulgar",
+      "Índice",
+      "Son ciertas B y C"
+    ],
+    correcta: 0
+  },
+  {
+    texto: "En relación a los músculos del plano profundo de la celda posterior del antebrazo, señale la opción más adecuada:",
+    opciones: [
+      "No pueden movilizar el dedo Pulgar",
+      "No pueden movilizar el dedo Índice",
+      "Es una musculatura principalmente flexora",
+      "Las opciones A, B y C son incorrectas"
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación FALSA en relación a los ramos terminales del plexo braquial:",
+    opciones: [
+      "Nervio mediano.",
+      "Nervio subclavio.",
+      "Nervio cubital.",
+      "Nervio radial."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la relación VERDADERA en relación a los ramos terminales del plexo braquial:",
+    opciones: [
+      "Nervio mediano.",
+      "Nervio cubital.",
+      "Nervio radial.",
+      "Las opciones A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la respuesta correcta en relación al nervio mediano:",
+    opciones: [
+      "Nervio motor.",
+      "Desciende por la cara lateral del brazo por el llamado conducto braquial.",
+      "A su paso por la muñeca, se introduce en el túnel carpiano y se bifurca en varios ramos.",
+      "Inerva musculatura en el brazo y antebrazo."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la respuesta INCORRECTA en relación al nervio mediano:",
+    opciones: [
+      "Nervio mixto.",
+      "Desciende por la cara medial del brazo por el llamado conducto braquial.",
+      "A su paso por la muñeca, se introduce en el túnel carpiano y se bifurca en varios ramos.",
+      "Las respuestas A, B y C son correctas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación FALSA en relación al nervio cubital:",
+    opciones: [
+      "Nervio mixto.",
+      "Desciende por la cara medial del brazo por el llamado conducto braquial..",
+      "A su paso por la muñeca, se introduce en el canal de Guyon.",
+      "Las respuestas A, B y C son incorrectas."
+    ],
+    correcta: 3
+  },
+  {
+    texto: "Señale la relación VERDADERA en relación al nervio radial:",
+    opciones: [
+      "Nervio sensitivo.",
+      "Desciende por la cara posterior del brazo muy profundo, antes de llegar al codo se sitúa lateralmente y se hace anterior en el pliegue del codo donde se bifurca en dos ramos, uno superficial y otro profundo.",
+      "No inerva músculo en el brazo.",
+      "Inerva musculatura situada en el antebrazo y en la mano."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la relación FALSA en relación a la vascularización arterial extremidad superior:",
+    opciones: [
+      "Músculos del brazo --- Arteria braquial.",
+      "Músculos celda anterior antebrazo --- Arteria radial.",
+      "Músculos brazo --- Arteria radial.",
+      "Músculos celda anterior antebrazo --- Arteria cubital."
+    ],
+    correcta: 2
+  },
+  {
+    texto: "Señale la respuesta VERDADERA en relación a la vascularización arterial de la extremidad superior:",
+    opciones: [
+      "Tronco braquiocefálico => arteria carótida común izquierda => arteria subclavia izquierda => arteria axilar izquierda => arteria braquial izquierda => arteria radial izquierda / arteria cubital izquierda.",
+      "Tronco braquiocefálico => arteria carótida común derecha => arteria subclavia derecha => arteria axilar derecha => arteria braquial derecha => arteria radial derecha / arteria cubital derecha.",
+      "Tronco braquiocefálico => arteria carótida común derecha => arteria subclavia derecha > arteria axilar derecha => arteria braquial derecha => arteria mediana / arteria radial derecha / arteria cubital derecha.",
+      "Las respuestas A y C son correctas."
+    ],
+    correcta: 1
+  },
+  {
+    texto: "Señale la respuesta VERDADERA en relación a la vascularización arterial de la extremidad inferior derecha:",
+    opciones: [
+      "Arteria ilíaca externa derecha => arteria femoral externa derecha => arteria poplitea derecha => arteria tibial anterior derecha / arteria tibial posterior derecha.",
+      "Arteria ilíaca externa derecha => arteria femoral externa derecha => arteria poplitea derecha => arteria pedia derecha.",
+      "Arteria ilíaca externa derecha => arteria femoral profunda derecha => arteria poplitea derecha => arteria tibial anterior derecha / arteria tibial posterior derecha.",
+      "Arteria ilíaca externa izquierda => arteria femoral profunda izquierda => arteria poplítea izquierda => arteria tibial anterior izquierda / arteria tibial posterior izquierda."
+    ],
+    correcta: 0
+  }
+];
+
+
+/* =========================
+   BLOQUE EXAMEN (MEZCLADO)
+   ========================= */
+
+function mezclarPreguntas(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function iniciarExamen() {
+    // 1. Agrupamos todas las preguntas de todos los bloques (del 1 al 7)
+    const todasLasPreguntas = [
+        ...bloque1, ...bloque2, ...bloque3, ...bloque4, 
+        ...bloque5, ...bloque6, ...bloque7
+    ];
+
+    // 2. Las mezclamos al azar y seleccionamos solo 35
+    const mezcladas = todasLasPreguntas.sort(() => Math.random() - 0.5);
+    bloqueExamen = mezcladas.slice(0, 35);
+
+    // 3. Reiniciamos los contadores a cero
+    preguntas = bloqueExamen;
+    indice = 0;
+    aciertos = 0;
+    fallos = 0;
+
+    // 4. Actualizamos el marcador en la pantalla
+    document.getElementById("contador").innerText = "Aciertos: 0 | Fallos: 0";
+
+    // 5. Mostramos la primera pregunta del examen
+    mostrarPregunta();
+    alert("Modo Examen activado: Se han seleccionado 35 preguntas aleatorias.");
+}
+
+/* =========================
+   VARIABLES GENERALES
+   ========================= */
+
+let preguntas = bloque1;
+let indice = 0;
+
+/* =========================
+   CAMBIAR DE BLOQUE
+   ========================= */
+
+function cambiarBloque() {
+    const valor = document.getElementById("selectorBloque").value;
+
+    if (valor == "1") preguntas = bloque1;
+    if (valor == "2") preguntas = bloque2;
+    if (valor == "3") preguntas = bloque3;
+    if (valor == "4") preguntas = bloque4;
+    if (valor == "5") preguntas = bloque5;
+    if (valor == "6") preguntas = bloque6;
+    if (valor == "7") preguntas = bloque7;
+
+    indice = 0;
+    mostrarPregunta();
+}
+
+/* =========================
+   MOSTRAR PREGUNTA
+   ========================= */
+
+function mostrarPregunta() {
+    if (preguntas.length === 0) {
+        document.getElementById("pregunta").innerText =
+            "Este bloque todavía no tiene preguntas";
+        document.getElementById("respuestas").innerHTML = "";
+        document.getElementById("resultado").innerText = "";
+        return;
+    }
+
+    document.getElementById("resultado").innerText = "";
+
+    const p = preguntas[indice];
+    document.getElementById("pregunta").innerText = p.texto;
+
+    const contenedor = document.getElementById("respuestas");
+    contenedor.innerHTML = "";
+
+    p.opciones.forEach((opcion, i) => {
+        const boton = document.createElement("button");
+        boton.innerText = opcion;
+        boton.onclick = () => comprobarRespuesta(i);
+        contenedor.appendChild(boton);
+    });
+}
+
+/* =========================
+   COMPROBAR RESPUESTA
+   ========================= */
+
+function comprobarRespuesta(seleccion) {
+    const correcta = preguntas[indice].correcta;
+    const botones = document.querySelectorAll("#respuestas button");
+
+    botones.forEach((b, i) => {
+        if (i === correcta) b.classList.add("correcta");
+        if (i === seleccion && i !== correcta) b.classList.add("incorrecta");
+        b.disabled = true;
+    });
+
+   if (seleccion === correcta) {
+    aciertos++;
+    document.getElementById("resultado").innerText = "✅ Correcto";
+} else {
+    fallos++;
+    document.getElementById("resultado").innerText = "❌ Incorrecto";
+}
+
+document.getElementById("contador").innerText =
+    `Aciertos: ${aciertos} | Fallos: ${fallos}`;
+
+}
+
+/* =========================
+   SIGUIENTE PREGUNTA
+   ========================= */
+
+function siguientePregunta() {
+    if (preguntas.length === 0) return;
+
+    indice++;
+
+    if (indice >= preguntas.length) {
+        alert("Has terminado este bloque");
+        indice = 0;
+    }
+
+    mostrarPregunta();
+}
+
+/* =========================
+   ARRANQUE
+   ========================= */
+
+mostrarPregunta();
+</script>
+
+</body>
+</html>
